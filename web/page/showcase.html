@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Zhiku Enterprise RAG</title>
+  <style>
+    :root{--bg:#08111f;--panel:#111d2f;--line:#243650;--text:#e8eef8;--muted:#93a4ba;--accent:#4f9cff;--good:#52d6a3}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 20% 0,#15345a 0,var(--bg) 42%);color:var(--text);font:15px/1.55 Inter,"Microsoft YaHei",sans-serif}
+    header{max-width:1180px;margin:auto;padding:42px 24px 24px;display:flex;justify-content:space-between;gap:24px;align-items:flex-start}
+    h1{font-size:32px;margin:0 0 8px;letter-spacing:-.6px}.subtitle{color:var(--muted);max-width:720px}.badge{padding:7px 12px;border:1px solid #2d5f8f;border-radius:999px;color:#9fcbff;background:#102a46;white-space:nowrap}
+    main{max-width:1180px;margin:auto;padding:0 24px 48px;display:grid;grid-template-columns:1.35fr .65fr;gap:18px}.card{background:rgba(17,29,47,.94);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 18px 50px #0004}.wide{grid-row:span 2}
+    h2{font-size:17px;margin:0 0 14px}label{display:block;margin:10px 0 6px;color:#bdd6f5;font-weight:700}textarea,input{width:100%;border:1px solid var(--line);background:#0a1627;color:var(--text);border-radius:10px;padding:12px;font:inherit}textarea{min-height:108px;resize:vertical}
+    button{border:0;border-radius:10px;padding:11px 16px;background:var(--accent);color:white;font-weight:700;cursor:pointer}button.secondary{background:#1d304a;color:#bdd6f5}button:disabled{opacity:.55;cursor:wait}.row{display:flex;gap:10px;align-items:center;margin-top:12px}.row>*{flex:1}.samples{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.samples button{font-size:12px;padding:7px 10px;background:#182a43;color:#bcd3ef}
+    #answer{margin-top:18px;padding:16px;background:#0a1627;border-radius:12px;min-height:120px;white-space:pre-wrap}.source{padding:12px 0;border-top:1px solid var(--line)}.source:first-child{border-top:0}.source strong{color:#b9d8ff}.source small,.muted{color:var(--muted)}.score{color:var(--good);font-variant-numeric:tabular-nums}
+    .document{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line)}.document:first-child{border:0}.metric{display:grid;grid-template-columns:1fr auto;gap:10px;padding:7px 0}.metric span:last-child{color:var(--good);font-weight:700}.error{color:#ff9d9d}.ok{color:var(--good)}
+    footer{max-width:1180px;margin:auto;padding:0 24px 36px;color:var(--muted)}a{color:#8fc3ff}@media(max-width:850px){main{grid-template-columns:1fr}.wide{grid-row:auto}header{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div><h1>Zhiku Enterprise RAG</h1><div class="subtitle">设备说明书知识库：混合检索、RRF、重排、可追溯引用、SSE、会话历史与可复现评测。</div></div>
+    <div id="mode" class="badge">正在检查服务…</div>
+  </header>
+  <main>
+    <section class="card wide">
+      <h2>知识库问答</h2>
+      <label for="question">问题（必填）</label>
+      <textarea id="question" placeholder="例如：HAK-180 最高工作温度是多少？">HAK-180烫普通纸张建议设置多少温度？</textarea>
+      <div class="samples">
+        <button data-q="HAK-180显示E01应该检查什么？">E01故障</button>
+        <button data-q="HAK-200的E07故障是什么意思？">型号区分</button>
+        <button data-q="LA2608默认管理地址是什么？">精确参数</button>
+        <button data-q="网关出现NET-04时排查什么？">稀疏关键词</button>
+      </div>
+      <label for="session">会话 ID（可选，用于关联多轮问答；至少 3 个字符）</label>
+      <div class="row"><input id="session" value="interview-session" minlength="3" placeholder="留空将自动创建会话" /><button id="ask">提问并检索</button></div>
+      <div id="answer" class="muted">答案和引用会显示在这里。</div>
+      <div id="sources"></div>
+    </section>
+    <section class="card">
+      <h2>知识库文档</h2>
+      <div id="documents" class="muted">正在读取…</div>
+      <div class="row"><input id="file" type="file" accept=".md,.txt" /><button id="upload" class="secondary">上传</button></div>
+      <div id="upload-status" class="muted"></div>
+    </section>
+    <section class="card">
+      <h2>内置评测</h2>
+      <p class="muted">使用合成设备手册和8条固定问题，结果可通过脚本复现。</p>
+      <button id="evaluate" class="secondary">运行评测</button>
+      <div id="metrics"></div>
+    </section>
+  </main>
+  <footer>Swagger：<a href="/docs">/docs</a> · 健康检查：<a href="/health/ready">/health/ready</a> · 页面不加载第三方脚本</footer>
+  <script>
+    const $=id=>document.getElementById(id);
+    function apiError(body,status){const detail=body?.detail;if(Array.isArray(detail)){return detail.map(item=>{const field=Array.isArray(item.loc)?item.loc.filter(x=>x!=='body').join('.'):'请求参数';return `${field || '请求参数'}：${item.msg || '格式不正确'}`}).join('；')}if(typeof detail==='string')return detail;return `HTTP ${status}`}
+    async function api(path, options={}){const response=await fetch(path,options);let body;try{body=await response.json()}catch{body={}}if(!response.ok)throw new Error(apiError(body,response.status));return body}
+    function escapeHtml(value){return String(value).replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]))}
+    async function health(){try{const data=await api('/health/ready');$('mode').textContent=`${data.mode.toUpperCase()} · ${data.status}`;$('mode').classList.add('ok')}catch(e){$('mode').textContent='服务不可用';$('mode').classList.add('error')}}
+    async function documents(){try{const items=await api('/api/v1/documents');$('documents').innerHTML=items.map(x=>`<div class="document"><div><strong>${escapeHtml(x.title)}</strong><br><small>${x.chunk_count} chunks · ${x.size_bytes} bytes</small></div><span class="ok">ready</span></div>`).join('')||'暂无文档'}catch(e){$('documents').innerHTML=`<span class="error">${escapeHtml(e.message)}</span>`}}
+    document.querySelectorAll('[data-q]').forEach(btn=>btn.onclick=()=>{$('question').value=btn.dataset.q});
+    $('ask').onclick=async()=>{const button=$('ask');const query=$('question').value.trim();const sessionId=$('session').value.trim();button.disabled=true;$('answer').textContent='正在执行混合检索与重排…';$('sources').innerHTML='';try{if(query.length<2)throw new Error('请输入至少 2 个字符的问题');if(sessionId && sessionId.length<3)throw new Error('会话 ID 至少需要 3 个字符，或者将它留空');const payload={query,top_k:5};if(sessionId)payload.session_id=sessionId;const data=await api('/api/v1/query',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});$('answer').textContent=data.answer;$('sources').innerHTML='<h2 style="margin-top:18px">引用来源</h2>'+data.sources.map((s,i)=>`<div class="source"><strong>[${i+1}] ${escapeHtml(s.title)}</strong> <span class="score">${s.score.toFixed(3)}</span><br><small>${escapeHtml(s.section)}</small><div>${escapeHtml(s.snippet)}</div></div>`).join('')}catch(e){$('answer').innerHTML=`<span class="error">${escapeHtml(e.message)}</span>`}finally{button.disabled=false}};
+    $('upload').onclick=async()=>{const file=$('file').files[0];if(!file)return $('upload-status').textContent='请选择Markdown或TXT文件';const form=new FormData();form.append('file',file);try{const data=await api('/api/v1/documents',{method:'POST',body:form});$('upload-status').textContent=`已索引：${data.document.title}`;await documents()}catch(e){$('upload-status').innerHTML=`<span class="error">${escapeHtml(e.message)}</span>`}};
+    $('evaluate').onclick=async()=>{const button=$('evaluate');button.disabled=true;$('metrics').textContent='运行中…';try{const data=await api('/api/v1/evaluations/benchmark',{method:'POST'});$('metrics').innerHTML=Object.entries(data.metrics).map(([k,v])=>`<div class="metric"><span>${escapeHtml(k)}</span><span>${v}</span></div>`).join('')}catch(e){$('metrics').innerHTML=`<span class="error">${escapeHtml(e.message)}</span>`}finally{button.disabled=false}};
+    health();documents();
+  </script>
+</body>
+</html>

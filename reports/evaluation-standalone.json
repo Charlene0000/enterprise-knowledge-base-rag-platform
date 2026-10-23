@@ -1,0 +1,157 @@
+{
+  "dataset": "eval_dataset.jsonl",
+  "sample_count": 8,
+  "metrics": {
+    "recall@5": 1.0,
+    "mrr": 1.0,
+    "answer_keyword_coverage": 1.0,
+    "citation_coverage": 1.0,
+    "heuristic_groundedness": 1.0,
+    "latency_p50_ms": 1.734,
+    "latency_p95_ms": 2.735
+  },
+  "cases": [
+    {
+      "question": "HAK-180烫普通纸张建议先设置多少温度？",
+      "expected_source": "HAK-180",
+      "retrieved_sources": [
+        "HAK-180桌面烫金机示例操作手册",
+        "HAK-180桌面烫金机示例操作手册",
+        "HAK-180桌面烫金机示例操作手册",
+        "HAK-180桌面烫金机示例操作手册",
+        "HAK-180桌面烫金机示例操作手册"
+      ],
+      "rank": 1,
+      "answer": "普通纸张建议从110℃开始试印，较厚卡纸可在120℃至135℃之间逐步调整，温度每次只增加5℃。 [1]\n接通电源后，将红色电源开关拨到ON位置，温控器会显示当前温度。 [1]",
+      "matched_keywords": [
+        "110℃"
+      ],
+      "latency_ms": 2.293
+    },
+    {
+      "question": "HAK-180开机后需要预热多久？",
+      "expected_source": "HAK-180",
+      "retrieved_sources": [
+        "HAK-180桌面烫金机示例操作手册",
+        "HAK-180桌面烫金机示例操作手册",
+        "HAK-180桌面烫金机示例操作手册",
+        "HAK-180桌面烫金机示例操作手册",
+        "HAK-180桌面烫金机示例操作手册"
+      ],
+      "rank": 1,
+      "answer": "机器通常需要预热8至12分钟； [1]\n接通电源后，将红色电源开关拨到ON位置，温控器会显示当前温度。 [1]",
+      "matched_keywords": [
+        "8至12分钟"
+      ],
+      "latency_ms": 2.735
+    },
+    {
+      "question": "烫金机显示E01应该检查什么？",
+      "expected_source": "HAK-180",
+      "retrieved_sources": [
+        "HAK-180桌面烫金机示例操作手册",
+        "HAK-200自动送料烫金机示例操作手册",
+        "HAK-180桌面烫金机示例操作手册",
+        "HAK-200自动送料烫金机示例操作手册",
+        "HAK-180桌面烫金机示例操作手册"
+      ],
+      "rank": 1,
+      "answer": "如果重新连接后仍显示E01，应停止使用并联系维修人员。 [1]\nE01表示温度传感器连接异常。 [1]",
+      "matched_keywords": [
+        "温度传感器"
+      ],
+      "latency_ms": 1.762
+    },
+    {
+      "question": "HAK-200的E07故障是什么意思？",
+      "expected_source": "HAK-200",
+      "retrieved_sources": [
+        "HAK-200自动送料烫金机示例操作手册",
+        "HAK-200自动送料烫金机示例操作手册",
+        "HAK-200自动送料烫金机示例操作手册",
+        "HAK-200自动送料烫金机示例操作手册",
+        "HAK-200自动送料烫金机示例操作手册"
+      ],
+      "rank": 1,
+      "answer": "E07表示送料电机过载。 [1]\n应按下急停按钮，清除送料通道中的卡料，检查滚轮是否过紧； [1]",
+      "matched_keywords": [
+        "送料电机过载"
+      ],
+      "latency_ms": 1.426
+    },
+    {
+      "question": "HAK-200最高可以设置到多少度？",
+      "expected_source": "HAK-200",
+      "retrieved_sources": [
+        "HAK-200自动送料烫金机示例操作手册",
+        "HAK-200自动送料烫金机示例操作手册",
+        "HAK-200自动送料烫金机示例操作手册",
+        "HAK-200自动送料烫金机示例操作手册",
+        "HAK-200自动送料烫金机示例操作手册"
+      ],
+      "rank": 1,
+      "answer": "HAK-200带有自动送料机构，额定功率为1200W，温度可调范围为60℃至220℃。 [2]",
+      "matched_keywords": [
+        "220℃"
+      ],
+      "latency_ms": 1.451
+    },
+    {
+      "question": "LA2608默认管理地址是什么？",
+      "expected_source": "LA2608",
+      "retrieved_sources": [
+        "LA2608室内无线网关示例维护手册",
+        "LA2608室内无线网关示例维护手册",
+        "LA2608室内无线网关示例维护手册",
+        "LA2608室内无线网关示例维护手册",
+        "LA2608室内无线网关示例维护手册"
+      ],
+      "rank": 1,
+      "answer": "LA2608首次启动后的默认管理地址为192.168.0.100，管理电脑需要配置为同网段地址后再访问Web控制台。 [1]\n首次登录后必须修改管理员密码，并将设备时间同步到可信NTP服务器。 [1]",
+      "matched_keywords": [
+        "192.168.0.100"
+      ],
+      "latency_ms": 1.604
+    },
+    {
+      "question": "LA2608恢复出厂设置要按RESET多久？",
+      "expected_source": "LA2608",
+      "retrieved_sources": [
+        "LA2608室内无线网关示例维护手册",
+        "LA2608室内无线网关示例维护手册",
+        "LA2608室内无线网关示例维护手册",
+        "LA2608室内无线网关示例维护手册",
+        "LA2608室内无线网关示例维护手册"
+      ],
+      "rank": 1,
+      "answer": "设备通电稳定后，使用绝缘细杆按住RESET键10秒，直到状态灯快速闪烁后松开。 [1]\n恢复出厂设置会清除网络、账号和无线策略配置。 [1]",
+      "matched_keywords": [
+        "10秒"
+      ],
+      "latency_ms": 1.921
+    },
+    {
+      "question": "网关出现NET-04告警时应该排查哪些配置？",
+      "expected_source": "LA2608",
+      "retrieved_sources": [
+        "LA2608室内无线网关示例维护手册",
+        "LA2608室内无线网关示例维护手册",
+        "LA2608室内无线网关示例维护手册",
+        "HAK-180桌面烫金机示例操作手册",
+        "LA2608室内无线网关示例维护手册"
+      ],
+      "rank": 1,
+      "answer": "告警代码NET-04表示上行网络不可达，应检查网线、VLAN配置、默认网关和DNS设置。 [1]",
+      "matched_keywords": [
+        "vlan",
+        "默认网关",
+        "dns"
+      ],
+      "latency_ms": 1.705
+    }
+  ],
+  "notes": {
+    "mode": "standalone",
+    "groundedness": "deterministic token-support proxy; not an LLM judge or RAGAS Faithfulness"
+  }
+}

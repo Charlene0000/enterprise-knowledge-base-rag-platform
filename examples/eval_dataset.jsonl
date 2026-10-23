@@ -1,0 +1,8 @@
+{"question":"HAK-180烫普通纸张建议先设置多少温度？","expected_source":"HAK-180","expected_keywords":["110℃"]}
+{"question":"HAK-180开机后需要预热多久？","expected_source":"HAK-180","expected_keywords":["8至12分钟"]}
+{"question":"烫金机显示E01应该检查什么？","expected_source":"HAK-180","expected_keywords":["温度传感器"]}
+{"question":"HAK-200的E07故障是什么意思？","expected_source":"HAK-200","expected_keywords":["送料电机过载"]}
+{"question":"HAK-200最高可以设置到多少度？","expected_source":"HAK-200","expected_keywords":["220℃"]}
+{"question":"LA2608默认管理地址是什么？","expected_source":"LA2608","expected_keywords":["192.168.0.100"]}
+{"question":"LA2608恢复出厂设置要按RESET多久？","expected_source":"LA2608","expected_keywords":["10秒"]}
+{"question":"网关出现NET-04告警时应该排查哪些配置？","expected_source":"LA2608","expected_keywords":["VLAN","默认网关","DNS"]}
